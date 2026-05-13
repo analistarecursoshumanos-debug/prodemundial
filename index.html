@@ -139,7 +139,8 @@ main { max-width: 1100px; margin: 0 auto; padding: 0 20px 100px; }
 .team-block { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .team-block.left { justify-content: flex-end; text-align: right; }
 .team-block.right { justify-content: flex-start; text-align: left; }
-.team-flag { font-size: 30px; line-height: 1; flex-shrink: 0; }
+.team-flag { width: 38px; height: 26px; flex-shrink: 0; border-radius: 4px; object-fit: cover; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+.team-flag-placeholder { font-size: 26px; line-height: 1; flex-shrink: 0; }
 .team-name { font-size: 15px; font-weight: 700; color: #f1f5f9; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .score-block {
   display: flex; align-items: center; gap: 6px;
@@ -309,36 +310,40 @@ tr:hover td { background: rgba(99,102,241,0.05); }
 <script>
 const ADMIN_EMAIL = "analistarecursoshumanos@elmundodeljuguete.com.ar";
 
+// Códigos ISO de cada país para obtener su bandera desde flagcdn.com
 const TEAM_FLAGS = {
-  "México": "🇲🇽", "Canadá": "🇨🇦", "Estados Unidos": "🇺🇸",
-  "Costa Rica": "🇨🇷", "Panamá": "🇵🇦", "Jamaica": "🇯🇲",
-  "Honduras": "🇭🇳", "Guatemala": "🇬🇹", "El Salvador": "🇸🇻",
-  "Argentina": "🇦🇷", "Brasil": "🇧🇷", "Uruguay": "🇺🇾",
-  "Colombia": "🇨🇴", "Ecuador": "🇪🇨", "Chile": "🇨🇱",
-  "Paraguay": "🇵🇾", "Perú": "🇵🇪", "Venezuela": "🇻🇪", "Bolivia": "🇧🇴",
-  "Francia": "🇫🇷", "España": "🇪🇸", "Inglaterra": "🇬🇧",
-  "Alemania": "🇩🇪", "Italia": "🇮🇹", "Portugal": "🇵🇹",
-  "Países Bajos": "🇳🇱", "Bélgica": "🇧🇪", "Croacia": "🇭🇷",
-  "Suiza": "🇨🇭", "Dinamarca": "🇩🇰", "Polonia": "🇵🇱",
-  "Serbia": "🇷🇸", "Austria": "🇦🇹", "Suecia": "🇸🇪",
-  "Noruega": "🇳🇴", "Hungría": "🇭🇺", "Turquía": "🇹🇷",
-  "Irlanda": "🇮🇪", "República Checa": "🇨🇿", "Rumania": "🇷🇴",
-  "Eslovaquia": "🇸🇰", "Eslovenia": "🇸🇮", "Albania": "🇦🇱",
-  "Ucrania": "🇺🇦", "Grecia": "🇬🇷",
-  "Japón": "🇯🇵", "Corea del Sur": "🇰🇷", "Australia": "🇦🇺",
-  "Irán": "🇮🇷", "Arabia Saudita": "🇸🇦", "Qatar": "🇶🇦",
-  "Irak": "🇮🇶", "Uzbekistán": "🇺🇿", "Jordania": "🇯🇴",
-  "Marruecos": "🇲🇦", "Senegal": "🇸🇳", "Egipto": "🇪🇬",
-  "Nigeria": "🇳🇬", "Camerún": "🇨🇲", "Argelia": "🇩🇿",
-  "Túnez": "🇹🇳", "Ghana": "🇬🇭", "Costa de Marfil": "🇨🇮",
-  "Sudáfrica": "🇿🇦", "Nueva Zelanda": "🇳🇿"
+  "México": "mx", "Canadá": "ca", "Estados Unidos": "us",
+  "Costa Rica": "cr", "Panamá": "pa", "Jamaica": "jm",
+  "Honduras": "hn", "Guatemala": "gt", "El Salvador": "sv",
+  "Argentina": "ar", "Brasil": "br", "Uruguay": "uy",
+  "Colombia": "co", "Ecuador": "ec", "Chile": "cl",
+  "Paraguay": "py", "Perú": "pe", "Venezuela": "ve", "Bolivia": "bo",
+  "Francia": "fr", "España": "es", "Inglaterra": "gb-eng",
+  "Alemania": "de", "Italia": "it", "Portugal": "pt",
+  "Países Bajos": "nl", "Bélgica": "be", "Croacia": "hr",
+  "Suiza": "ch", "Dinamarca": "dk", "Polonia": "pl",
+  "Serbia": "rs", "Austria": "at", "Suecia": "se",
+  "Noruega": "no", "Hungría": "hu", "Turquía": "tr",
+  "Irlanda": "ie", "República Checa": "cz", "Rumania": "ro",
+  "Eslovaquia": "sk", "Eslovenia": "si", "Albania": "al",
+  "Ucrania": "ua", "Grecia": "gr",
+  "Japón": "jp", "Corea del Sur": "kr", "Australia": "au",
+  "Irán": "ir", "Arabia Saudita": "sa", "Qatar": "qa",
+  "Irak": "iq", "Uzbekistán": "uz", "Jordania": "jo",
+  "Marruecos": "ma", "Senegal": "sn", "Egipto": "eg",
+  "Nigeria": "ng", "Camerún": "cm", "Argelia": "dz",
+  "Túnez": "tn", "Ghana": "gh", "Costa de Marfil": "ci",
+  "Sudáfrica": "za", "Nueva Zelanda": "nz"
 };
 
 function getFlag(teamName) {
-  if (TEAM_FLAGS[teamName]) return TEAM_FLAGS[teamName];
-  if (/^Equipo /.test(teamName)) return "⚽";
-  if (/^Gan\./.test(teamName) || /^Per\./.test(teamName)) return "🏆";
-  return "❓";
+  const code = TEAM_FLAGS[teamName];
+  if (code) {
+    return '<img class="team-flag" src="https://flagcdn.com/w80/' + code + '.png" alt="' + teamName + '" />';
+  }
+  if (/^Equipo /.test(teamName)) return '<span class="team-flag-placeholder">⚽</span>';
+  if (/^Gan\./.test(teamName) || /^Per\./.test(teamName)) return '<span class="team-flag-placeholder">🏆</span>';
+  return '<span class="team-flag-placeholder">❓</span>';
 }
 
 firebase.initializeApp(firebaseConfig);
@@ -480,13 +485,13 @@ function renderMatches() {
     html += '<span>📅 ' + formatDate(m.date) + ' · ' + m.time + 'hs · 📍 ' + m.venue + '</span>';
     if (locked) html += '<span class="lock-pill">🔒 Cerrado</span>';
     html += '</div><div class="match-body">';
-    html += '<div class="team-block left"><span class="team-name">' + m.team1 + '</span><span class="team-flag">' + getFlag(m.team1) + '</span></div>';
+    html += '<div class="team-block left"><span class="team-name">' + m.team1 + '</span>' + getFlag(m.team1) + '</div>';
     html += '<div class="score-block">';
     html += '<input type="number" min="0" max="20" data-id="' + m.id + '" data-side="s1" value="' + (pred.s1 != null ? pred.s1 : "") + '"' + (locked ? " disabled" : "") + ' />';
     html += '<span class="vs">-</span>';
     html += '<input type="number" min="0" max="20" data-id="' + m.id + '" data-side="s2" value="' + (pred.s2 != null ? pred.s2 : "") + '"' + (locked ? " disabled" : "") + ' />';
     html += '</div>';
-    html += '<div class="team-block right"><span class="team-flag">' + getFlag(m.team2) + '</span><span class="team-name">' + m.team2 + '</span></div>';
+    html += '<div class="team-block right">' + getFlag(m.team2) + '<span class="team-name">' + m.team2 + '</span></div>';
     html += '</div>';
     if (real) {
       html += '<div class="official-result"><span>Resultado oficial: <strong>' + real.s1 + ' - ' + real.s2 + '</strong></span>';
@@ -603,4 +608,5 @@ $("btn-save-results").onclick = async () => {
 };
 </script>
 </body>
+</html>
 </html>
