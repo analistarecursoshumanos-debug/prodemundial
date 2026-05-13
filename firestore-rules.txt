@@ -1,0 +1,33 @@
+// ============================================================
+// REGLAS DE SEGURIDAD DE FIRESTORE
+// ============================================================
+// Copiá este texto y pegalo en:
+// Firebase Console → Firestore Database → pestaña "Rules"
+//
+// ⚠️ IMPORTANTE: reemplazá "TU_EMAIL_ADMIN" por tu email
+// ============================================================
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Usuarios: cada uno solo edita lo propio, pero todos pueden leer (para mostrar nombres)
+    match /users/{userId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Pronósticos: cada uno solo edita los suyos, pero todos leen (para la tabla)
+    match /predictions/{userId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Resultados oficiales: solo el admin escribe, todos leen
+    match /results/{doc} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null
+        && request.auth.token.email == "analistarecursoshumanos@elmundodeljuguete.com.ar";
+    }
+  }
+}
