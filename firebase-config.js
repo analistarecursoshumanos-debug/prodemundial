@@ -1,13 +1,6 @@
 // ============================================================
-// CONFIGURACIÓN DE FIREBASE — Reemplazá estos valores
+// CONFIGURACIÓN DE FIREBASE — datos del proyecto de Ariel
 // ============================================================
-// Cómo obtener estos datos:
-// 1. Andá a https://console.firebase.google.com
-// 2. Creá un proyecto (es gratis)
-// 3. En el panel: "Agregar app" → ícono web </>
-// 4. Te muestra un objeto firebaseConfig — copialo y pegalo acá
-// ============================================================
-
 const firebaseConfig = {
   apiKey: "AIzaSyCnBQZ8JmbHQ7Z7UbYOgGsJeP9r0zlnT-o",
   authDomain: "prode-mundial-2026-5b09d.firebaseapp.com",
