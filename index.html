@@ -16,7 +16,8 @@ body {
   min-height: 100vh;
 }
 header { background: rgba(11,16,32,0.85); border-bottom: 1px solid rgba(99,102,241,0.35); padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(14px); }
-header h1 { font-size: 20px; background: linear-gradient(90deg, #818cf8, #ec4899); -webkit-background-clip: text; background-clip: text; color: transparent; font-weight: 800; }
+header h1 { font-size: 20px; background: linear-gradient(90deg, #fbbf24, #ef4444); -webkit-background-clip: text; background-clip: text; color: transparent; font-weight: 800; display: flex; align-items: center; gap: 10px; }
+header h1 .mini-brand { font-size: 11px; color: #ef4444; font-weight: 700; letter-spacing: 1px; }
 header .user-info { font-size: 14px; color: #cbd5e1; display: flex; align-items: center; gap: 8px; }
 header .user-info .avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #6366f1, #ec4899); display: inline-flex; align-items: center; justify-content: center; font-weight: 700; color: white; font-size: 14px; }
 header .user-info button { background: rgba(239,68,68,0.15); color: #fca5a5; border: 1px solid rgba(239,68,68,0.35); padding: 6px 12px; border-radius: 8px; cursor: pointer; margin-left: 10px; font-size: 13px; }
@@ -29,8 +30,12 @@ main { max-width: 1100px; margin: 0 auto; padding: 0 20px 100px; }
 .badge { display: inline-block; padding: 3px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; color: white; }
 .badge.b3 { background: #22c55e; } .badge.b1 { background: #eab308; } .badge.b0 { background: #64748b; }
 .auth-wrap { max-width: 440px; margin: 60px auto; padding: 36px 32px; background: rgba(15,23,42,0.7); backdrop-filter: blur(20px); border-radius: 20px; border: 1px solid rgba(99,102,241,0.25); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.6); }
-.auth-wrap h1 { text-align: center; margin-bottom: 6px; font-size: 28px; background: linear-gradient(90deg, #818cf8, #ec4899); -webkit-background-clip: text; background-clip: text; color: transparent; font-weight: 800; }
-.auth-wrap p.sub { text-align: center; color: #94a3b8; margin-bottom: 24px; font-size: 14px; }
+.auth-wrap h1 { text-align: center; margin-bottom: 4px; font-size: 26px; background: linear-gradient(90deg, #fbbf24, #ef4444); -webkit-background-clip: text; background-clip: text; color: transparent; font-weight: 900; letter-spacing: 1px; }
+.auth-wrap .brand { display: flex; flex-direction: column; align-items: center; gap: 8px; margin-bottom: 18px; }
+.auth-wrap .brand-logo { width: 110px; height: 110px; border-radius: 50%; overflow: hidden; box-shadow: 0 12px 32px rgba(220,38,38,0.4); }
+.auth-wrap .brand-logo img { width: 100%; height: 100%; display: block; object-fit: cover; }
+.auth-wrap .brand-name { font-size: 13px; font-weight: 800; color: #ef4444; letter-spacing: 2px; text-transform: uppercase; }
+.auth-wrap p.sub { text-align: center; color: #94a3b8; margin-bottom: 24px; font-size: 13px; }
 .auth-wrap input { width: 100%; padding: 13px 14px; margin: 7px 0; border: 1px solid rgba(99,102,241,0.25); border-radius: 10px; background: rgba(15,23,42,0.8); color: #f1f5f9; font-size: 15px; }
 .auth-wrap input:focus { outline: none; border-color: #818cf8; box-shadow: 0 0 0 3px rgba(129,140,248,0.18); }
 .auth-wrap button { width: 100%; padding: 13px; margin-top: 10px; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 15px; font-weight: 700; }
@@ -75,18 +80,20 @@ th { color: #a5b4fc; font-size: 12px; font-weight: 700; text-transform: uppercas
 .admin-match .team-mini { display: flex; align-items: center; gap: 6px; font-size: 13px; }
 .admin-match .team-mini.right { justify-content: flex-end; text-align: right; }
 .admin-match .vs { text-align: center; color: #94a3b8; font-size: 12px; }
-.view-match { display: grid; grid-template-columns: 80px 1fr auto 1fr; gap: 12px; align-items: center; padding: 12px 14px; border-radius: 10px; background: rgba(15,23,42,0.5); margin-bottom: 6px; border: 1px solid rgba(99,102,241,0.12); }
-.view-match .vm-time { font-size: 12px; color: #a5b4fc; font-weight: 600; line-height: 1.4; }
-.view-match .vm-time strong { display: block; color: #e0e7ff; font-size: 13px; }
-.view-match .vm-team { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; }
-.view-match .vm-team.left { justify-content: flex-end; text-align: right; }
-.view-match .vm-vs { font-size: 13px; color: #94a3b8; font-weight: 700; padding: 0 6px; }
-.view-match .vm-venue { grid-column: 1 / -1; font-size: 11px; color: #94a3b8; padding-top: 4px; }
-@media (max-width: 640px) {
-  .view-match { grid-template-columns: 1fr; gap: 6px; }
-  .view-match .vm-time { order: -1; }
-  .view-match .vm-team.left, .view-match .vm-team.right { justify-content: flex-start; text-align: left; }
-}
+.fv-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; }
+.view-match { background: linear-gradient(180deg, rgba(30,41,59,0.85), rgba(15,23,42,0.85)); border-radius: 16px; overflow: hidden; border: 1px solid rgba(99,102,241,0.22); box-shadow: 0 10px 25px -10px rgba(0,0,0,0.5); transition: transform 0.18s, border-color 0.2s, box-shadow 0.2s; display: flex; flex-direction: column; }
+.view-match:hover { transform: translateY(-3px); border-color: #ef4444; box-shadow: 0 16px 35px -10px rgba(239,68,68,0.25); }
+.view-match .vm-header { background: linear-gradient(90deg, #ef4444, #f59e0b); color: white; padding: 8px 14px; font-size: 12px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; letter-spacing: 0.4px; }
+.view-match .vm-header .vm-date { display: flex; align-items: center; gap: 6px; }
+.view-match .vm-header .vm-time-pill { background: rgba(0,0,0,0.25); padding: 2px 9px; border-radius: 999px; font-weight: 800; }
+.view-match .vm-body { display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: center; padding: 18px 12px; }
+.view-match .vm-side { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.view-match .vm-side img { width: 56px; height: 38px; border-radius: 6px; object-fit: cover; box-shadow: 0 4px 8px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); }
+.view-match .vm-team-name { font-size: 13px; font-weight: 700; color: #f1f5f9; text-align: center; line-height: 1.2; }
+.view-match .vm-center { text-align: center; font-size: 18px; font-weight: 900; color: #94a3b8; padding: 0 4px; }
+.view-match .vm-center .vm-score { background: linear-gradient(90deg, #22c55e, #10b981); -webkit-background-clip: text; background-clip: text; color: transparent; font-size: 22px; }
+.view-match .vm-footer { background: rgba(0,0,0,0.25); padding: 8px 14px; font-size: 11px; color: #94a3b8; text-align: center; border-top: 1px solid rgba(99,102,241,0.1); }
+.view-match .vm-footer .vm-venue-icon { color: #ef4444; }
 @media (max-width: 640px) {
   header h1 { font-size: 17px; } .team-name { font-size: 13px; }
   .score-block input { width: 36px; font-size: 15px; }
@@ -97,7 +104,13 @@ th { color: #a5b4fc; font-size: 12px; font-weight: 700; text-transform: uppercas
 <body>
 
 <div id="auth-screen" class="auth-wrap">
-  <h1>🏆 Prode Mundial 2026</h1>
+  <div class="brand">
+    <div class="brand-logo">
+      <img src="logo.jpg" alt="El Mundo del Juguete" onerror="this.style.display='none'" />
+    </div>
+    <div class="brand-name">El Mundo del Juguete</div>
+  </div>
+  <h1>🏆 PRODE MUNDIAL 2026</h1>
   <p class="sub">Pronosticá los partidos y ganá el prode</p>
   <input type="text" id="auth-name" placeholder="Tu nombre (solo al registrarte)" />
   <input type="email" id="auth-email" placeholder="Email" />
@@ -110,7 +123,7 @@ th { color: #a5b4fc; font-size: 12px; font-weight: 700; text-transform: uppercas
 
 <div id="app-screen" style="display:none">
   <header>
-    <h1>🏆 Prode Mundial 2026</h1>
+    <h1>🦒 Prode Mundial 2026</h1>
     <div class="user-info">
       <span class="avatar" id="user-avatar">A</span>
       <span id="user-name"></span>
@@ -419,6 +432,7 @@ function renderFixtureView() {
   const cont = $("fixture-view-list");
   cont.innerHTML = "";
   let currentStage = "";
+  let grid = null;
   FIXTURE.forEach(m => {
     if (m.stage !== currentStage) {
       currentStage = m.stage;
@@ -426,20 +440,28 @@ function renderFixtureView() {
       h.className = "stage-header";
       h.textContent = m.stage;
       cont.appendChild(h);
+      grid = document.createElement("div");
+      grid.className = "fv-grid";
+      cont.appendChild(grid);
     }
     const real = officialResults[m.id];
     const div = document.createElement("div");
     div.className = "view-match";
-    const scoreHtml = real
-      ? '<strong style="color:#86efac;font-size:16px">' + real.s1 + ' - ' + real.s2 + '</strong>'
-      : '<span class="vm-vs">vs</span>';
+    const centerHtml = real
+      ? '<div class="vm-score">' + real.s1 + ' - ' + real.s2 + '</div>'
+      : 'VS';
     div.innerHTML =
-      '<div class="vm-time"><strong>📅 ' + formatDate(m.date) + '</strong>🕐 ' + m.time + 'hs</div>' +
-      '<div class="vm-team left"><span>' + m.team1 + '</span>' + getFlag(m.team1) + '</div>' +
-      scoreHtml +
-      '<div class="vm-team right">' + getFlag(m.team2) + '<span>' + m.team2 + '</span></div>' +
-      '<div class="vm-venue">📍 ' + m.venue + '</div>';
-    cont.appendChild(div);
+      '<div class="vm-header">' +
+        '<div class="vm-date">📅 ' + formatDate(m.date) + '</div>' +
+        '<div class="vm-time-pill">' + m.time + ' hs</div>' +
+      '</div>' +
+      '<div class="vm-body">' +
+        '<div class="vm-side">' + getFlag(m.team1) + '<div class="vm-team-name">' + m.team1 + '</div></div>' +
+        '<div class="vm-center">' + centerHtml + '</div>' +
+        '<div class="vm-side">' + getFlag(m.team2) + '<div class="vm-team-name">' + m.team2 + '</div></div>' +
+      '</div>' +
+      '<div class="vm-footer"><span class="vm-venue-icon">📍</span> ' + m.venue + '</div>';
+    grid.appendChild(div);
   });
 }
 
