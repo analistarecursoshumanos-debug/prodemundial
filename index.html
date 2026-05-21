@@ -75,6 +75,18 @@ th { color: #a5b4fc; font-size: 12px; font-weight: 700; text-transform: uppercas
 .admin-match .team-mini { display: flex; align-items: center; gap: 6px; font-size: 13px; }
 .admin-match .team-mini.right { justify-content: flex-end; text-align: right; }
 .admin-match .vs { text-align: center; color: #94a3b8; font-size: 12px; }
+.view-match { display: grid; grid-template-columns: 80px 1fr auto 1fr; gap: 12px; align-items: center; padding: 12px 14px; border-radius: 10px; background: rgba(15,23,42,0.5); margin-bottom: 6px; border: 1px solid rgba(99,102,241,0.12); }
+.view-match .vm-time { font-size: 12px; color: #a5b4fc; font-weight: 600; line-height: 1.4; }
+.view-match .vm-time strong { display: block; color: #e0e7ff; font-size: 13px; }
+.view-match .vm-team { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; }
+.view-match .vm-team.left { justify-content: flex-end; text-align: right; }
+.view-match .vm-vs { font-size: 13px; color: #94a3b8; font-weight: 700; padding: 0 6px; }
+.view-match .vm-venue { grid-column: 1 / -1; font-size: 11px; color: #94a3b8; padding-top: 4px; }
+@media (max-width: 640px) {
+  .view-match { grid-template-columns: 1fr; gap: 6px; }
+  .view-match .vm-time { order: -1; }
+  .view-match .vm-team.left, .view-match .vm-team.right { justify-content: flex-start; text-align: left; }
+}
 @media (max-width: 640px) {
   header h1 { font-size: 17px; } .team-name { font-size: 13px; }
   .score-block input { width: 36px; font-size: 15px; }
@@ -107,6 +119,7 @@ th { color: #a5b4fc; font-size: 12px; font-weight: 700; text-transform: uppercas
   </header>
   <nav>
     <button data-tab="fixture" class="active">📋 Mis pronósticos</button>
+    <button data-tab="fixture-view">📅 Fixture completo</button>
     <button data-tab="leaderboard">🏅 Posiciones</button>
     <button data-tab="rules">📖 Reglas</button>
     <button data-tab="admin" id="admin-tab-btn" style="display:none">⚙️ Admin</button>
@@ -121,6 +134,10 @@ th { color: #a5b4fc; font-size: 12px; font-weight: 700; text-transform: uppercas
       </div>
       <div id="matches-list"></div>
       <div class="actions-bar"><button id="btn-save">💾 Guardar pronósticos</button></div>
+    </div>
+    <div id="tab-fixture-view" style="display:none">
+      <div class="info-box">📅 Fixture completo del Mundial 2026 con todos los partidos, equipos y horarios (en hora Argentina).</div>
+      <div id="fixture-view-list"></div>
     </div>
     <div id="tab-leaderboard" style="display:none">
       <div class="card"><h2>🏅 Tabla de posiciones</h2>
@@ -273,9 +290,10 @@ document.querySelectorAll("nav button").forEach(btn => {
   btn.onclick = () => {
     document.querySelectorAll("nav button").forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
-    ["fixture","leaderboard","rules","admin"].forEach(t => $("tab-" + t).style.display = "none");
+    ["fixture","fixture-view","leaderboard","rules","admin"].forEach(t => $("tab-" + t).style.display = "none");
     $("tab-" + btn.dataset.tab).style.display = "block";
     if (btn.dataset.tab === "leaderboard") renderLeaderboard();
+    if (btn.dataset.tab === "fixture-view") renderFixtureView();
   };
 });
 
@@ -394,6 +412,34 @@ async function renderLeaderboard() {
     const youTag = r.uid === currentUser.uid ? ' (vos)' : '';
     tr.innerHTML = '<td>' + medal + '</td><td>' + r.name + youTag + '</td><td>' + r.hits + '</td><td>' + r.exact + '</td><td><strong style="color:#86efac;font-size:16px">' + r.points + '</strong></td>';
     tbody.appendChild(tr);
+  });
+}
+
+function renderFixtureView() {
+  const cont = $("fixture-view-list");
+  cont.innerHTML = "";
+  let currentStage = "";
+  FIXTURE.forEach(m => {
+    if (m.stage !== currentStage) {
+      currentStage = m.stage;
+      const h = document.createElement("div");
+      h.className = "stage-header";
+      h.textContent = m.stage;
+      cont.appendChild(h);
+    }
+    const real = officialResults[m.id];
+    const div = document.createElement("div");
+    div.className = "view-match";
+    const scoreHtml = real
+      ? '<strong style="color:#86efac;font-size:16px">' + real.s1 + ' - ' + real.s2 + '</strong>'
+      : '<span class="vm-vs">vs</span>';
+    div.innerHTML =
+      '<div class="vm-time"><strong>📅 ' + formatDate(m.date) + '</strong>🕐 ' + m.time + 'hs</div>' +
+      '<div class="vm-team left"><span>' + m.team1 + '</span>' + getFlag(m.team1) + '</div>' +
+      scoreHtml +
+      '<div class="vm-team right">' + getFlag(m.team2) + '<span>' + m.team2 + '</span></div>' +
+      '<div class="vm-venue">📍 ' + m.venue + '</div>';
+    cont.appendChild(div);
   });
 }
 
