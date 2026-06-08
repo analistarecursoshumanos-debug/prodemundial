@@ -36,7 +36,8 @@ main { max-width: 1100px; margin: 0 auto; padding: 0 20px 100px; }
 .auth-wrap .brand-logo img { width: 100%; height: 100%; display: block; object-fit: cover; }
 .auth-wrap .brand-name { font-size: 13px; font-weight: 800; color: #ef4444; letter-spacing: 2px; text-transform: uppercase; }
 .auth-wrap p.sub { text-align: center; color: #94a3b8; margin-bottom: 24px; font-size: 13px; }
-.auth-wrap input { width: 100%; padding: 13px 14px; margin: 7px 0; border: 1px solid rgba(99,102,241,0.25); border-radius: 10px; background: rgba(15,23,42,0.8); color: #f1f5f9; font-size: 15px; }
+.auth-wrap input, .auth-wrap select { width: 100%; padding: 13px 14px; margin: 7px 0; border: 1px solid rgba(99,102,241,0.25); border-radius: 10px; background: rgba(15,23,42,0.8); color: #f1f5f9; font-size: 15px; }
+.auth-wrap select { appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a5b4fc' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'/%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 12px center; background-size: 16px; padding-right: 40px; cursor: pointer; }
 .auth-wrap input:focus { outline: none; border-color: #818cf8; box-shadow: 0 0 0 3px rgba(129,140,248,0.18); }
 .auth-wrap button { width: 100%; padding: 13px; margin-top: 10px; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 15px; font-weight: 700; }
 .auth-wrap button#btn-register { background: linear-gradient(135deg, #10b981, #22c55e); }
@@ -112,7 +113,11 @@ th { color: #a5b4fc; font-size: 12px; font-weight: 700; text-transform: uppercas
   </div>
   <h1>🏆 PRODE MUNDIAL 2026</h1>
   <p class="sub">Pronosticá los partidos y ganá el prode</p>
-  <input type="text" id="auth-name" placeholder="Tu nombre (solo al registrarte)" />
+  <input type="text" id="auth-name" placeholder="Tu nombre completo (solo al registrarte)" />
+  <input type="text" id="auth-legajo" placeholder="Legajo (solo al registrarte)" inputmode="numeric" pattern="[0-9]*" />
+  <select id="auth-sucursal" style="display:none">
+    <option value="">Seleccionar sucursal...</option>
+  </select>
   <input type="email" id="auth-email" placeholder="Email" />
   <input type="password" id="auth-pass" placeholder="Contraseña (mín. 6 caracteres)" />
   <button id="btn-login">Ingresar</button>
@@ -154,7 +159,7 @@ th { color: #a5b4fc; font-size: 12px; font-weight: 700; text-transform: uppercas
     </div>
     <div id="tab-leaderboard" style="display:none">
       <div class="card"><h2>🏅 Tabla de posiciones</h2>
-        <table><thead><tr><th>#</th><th>Participante</th><th>Aciertos</th><th>Exactos</th><th>Puntos</th></tr></thead>
+        <table><thead><tr><th>#</th><th>Participante</th><th>Legajo</th><th>Sucursal</th><th>Aciertos</th><th>Exactos</th><th>Puntos</th></tr></thead>
         <tbody id="leaderboard-body"></tbody></table>
       </div>
     </div>
@@ -181,6 +186,7 @@ th { color: #a5b4fc; font-size: 12px; font-weight: 700; text-transform: uppercas
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script>
 <script src="fixture.js"></script>
+<script src="empleados.js"></script>
 
 <script>
 const ADMIN_EMAIL = "arielvico93@gmail.com";
@@ -234,15 +240,57 @@ let isAdmin = false;
 const $ = (id) => document.getElementById(id);
 const showMsg = (text, type) => { $("auth-msg").innerHTML = '<div class="alert ' + (type || "error") + '">' + text + '</div>'; };
 
+// Poblar dropdown de sucursales al cargar
+(function poblarSucursales() {
+  const sel = $("auth-sucursal");
+  if (typeof SUCURSALES !== "undefined" && sel) {
+    SUCURSALES.forEach(num => {
+      const opt = document.createElement("option");
+      opt.value = String(num);
+      opt.textContent = "Sucursal " + num;
+      sel.appendChild(opt);
+    });
+  }
+})();
+
+// Mostrar campos extra al tipear en nombre o legajo (modo "registro")
+function mostrarCamposRegistro() {
+  $("auth-sucursal").style.display = "block";
+}
+$("auth-name").addEventListener("focus", mostrarCamposRegistro);
+$("auth-legajo").addEventListener("focus", mostrarCamposRegistro);
+
 $("btn-register").onclick = async () => {
   const name = $("auth-name").value.trim();
+  const legajoStr = $("auth-legajo").value.trim();
+  const sucursal = $("auth-sucursal").value;
   const email = $("auth-email").value.trim();
   const pass = $("auth-pass").value;
-  if (!name) return showMsg("Ingresá tu nombre");
+
+  if (!name) return showMsg("Ingresá tu nombre completo");
+  if (!legajoStr) return showMsg("Ingresá tu legajo");
+  if (!/^\d+$/.test(legajoStr)) return showMsg("El legajo debe ser solo números");
+  const legajo = parseInt(legajoStr);
+
+  // Validar contra la nómina
+  if (typeof LEGAJOS_VALIDOS !== "undefined") {
+    if (!(legajoStr in LEGAJOS_VALIDOS)) {
+      return showMsg("Legajo no encontrado en la nómina de empleados fijos. Verificá el número o contactá con RRHH.");
+    }
+  }
+
+  if (sucursal === "") return showMsg("Seleccioná tu sucursal");
   if (!email || !pass) return showMsg("Completá email y contraseña");
+
   try {
     const cred = await auth.createUserWithEmailAndPassword(email, pass);
-    await db.collection("users").doc(cred.user.uid).set({ name: name, email: email, createdAt: new Date() });
+    await db.collection("users").doc(cred.user.uid).set({
+      name: name,
+      legajo: legajo,
+      sucursal: parseInt(sucursal),
+      email: email,
+      createdAt: new Date()
+    });
     showMsg("¡Cuenta creada!", "ok");
   } catch (e) { showMsg(traducirError(e.code)); }
 };
@@ -395,7 +443,7 @@ $("btn-save").onclick = async () => {
 
 async function renderLeaderboard() {
   const tbody = $("leaderboard-body");
-  tbody.innerHTML = '<tr><td colspan="5">Cargando...</td></tr>';
+  tbody.innerHTML = '<tr><td colspan="7">Cargando...</td></tr>';
   const predSnap = await db.collection("predictions").get();
   const userSnap = await db.collection("users").get();
   const users = {};
@@ -410,12 +458,13 @@ async function renderLeaderboard() {
       if (pts === 3) { points += 3; exact++; hits++; }
       else if (pts === 1) { points += 1; hits++; }
     });
-    ranks.push({ uid: uid, name: (users[uid] && users[uid].name) || "?", points: points, exact: exact, hits: hits });
+    const u = users[uid] || {};
+    ranks.push({ uid: uid, name: u.name || "?", legajo: u.legajo != null ? u.legajo : "-", sucursal: u.sucursal != null ? ("Suc. " + u.sucursal) : "-", points: points, exact: exact, hits: hits });
   });
   ranks.sort((a, b) => b.points - a.points || b.exact - a.exact);
   tbody.innerHTML = "";
   if (ranks.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#94a3b8">Todavía no hay pronósticos cargados</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#94a3b8">Todavía no hay pronósticos cargados</td></tr>';
     return;
   }
   ranks.forEach((r, i) => {
@@ -423,7 +472,7 @@ async function renderLeaderboard() {
     if (r.uid === currentUser.uid) tr.classList.add("me-row");
     const medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : (i + 1);
     const youTag = r.uid === currentUser.uid ? ' (vos)' : '';
-    tr.innerHTML = '<td>' + medal + '</td><td>' + r.name + youTag + '</td><td>' + r.hits + '</td><td>' + r.exact + '</td><td><strong style="color:#86efac;font-size:16px">' + r.points + '</strong></td>';
+    tr.innerHTML = '<td>' + medal + '</td><td>' + r.name + youTag + '</td><td>' + r.legajo + '</td><td>' + r.sucursal + '</td><td>' + r.hits + '</td><td>' + r.exact + '</td><td><strong style="color:#86efac;font-size:16px">' + r.points + '</strong></td>';
     tbody.appendChild(tr);
   });
 }
