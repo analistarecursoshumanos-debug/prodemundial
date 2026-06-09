@@ -114,7 +114,6 @@ th { color: #a5b4fc; font-size: 12px; font-weight: 700; text-transform: uppercas
   <h1>🏆 PRODE MUNDIAL 2026</h1>
   <p class="sub">Pronosticá los partidos y ganá el prode</p>
   <input type="text" id="auth-name" placeholder="Tu nombre completo (solo al registrarte)" />
-  <input type="text" id="auth-legajo" placeholder="Legajo (solo al registrarte)" inputmode="numeric" pattern="[0-9]*" />
   <select id="auth-sucursal" style="display:none">
     <option value="">Seleccionar sucursal...</option>
   </select>
@@ -141,6 +140,7 @@ th { color: #a5b4fc; font-size: 12px; font-weight: 700; text-transform: uppercas
     <button data-tab="leaderboard">🏅 Posiciones</button>
     <button data-tab="rules">📖 Reglas</button>
     <button data-tab="admin" id="admin-tab-btn" style="display:none">⚙️ Admin</button>
+    <button data-tab="inscribir" id="inscribir-tab-btn" style="display:none">👥 Inscribir</button>
   </nav>
   <main>
     <div id="tab-fixture">
@@ -159,7 +159,7 @@ th { color: #a5b4fc; font-size: 12px; font-weight: 700; text-transform: uppercas
     </div>
     <div id="tab-leaderboard" style="display:none">
       <div class="card"><h2>🏅 Tabla de posiciones</h2>
-        <table><thead><tr><th>#</th><th>Participante</th><th>Legajo</th><th>Sucursal</th><th>Aciertos</th><th>Exactos</th><th>Puntos</th></tr></thead>
+        <table><thead><tr><th>#</th><th>Participante</th><th>Sucursal</th><th>Aciertos</th><th>Exactos</th><th>Puntos</th></tr></thead>
         <tbody id="leaderboard-body"></tbody></table>
       </div>
     </div>
@@ -171,6 +171,27 @@ th { color: #a5b4fc; font-size: 12px; font-weight: 700; text-transform: uppercas
         <h3>🏆 Empate</h3><p>Gana el que tenga más resultados exactos.</p>
       </div>
     </div>
+    <div id="tab-inscribir" style="display:none">
+      <div class="card">
+        <h2>👥 Inscribir empleados manualmente</h2>
+        <div class="info-box">Usá este formulario para anotar empleados que no se animan a registrarse solos. Vos elegís un email y una contraseña inicial, y le decís al empleado para que pueda entrar.</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px">
+          <input type="text" id="ins-name" placeholder="Nombre completo" style="padding:11px;border:1px solid rgba(99,102,241,0.3);border-radius:8px;background:#0b1020;color:white;font-size:14px" />
+          <select id="ins-sucursal" style="padding:11px;border:1px solid rgba(99,102,241,0.3);border-radius:8px;background:#0b1020;color:white;font-size:14px">
+            <option value="">Sucursal...</option>
+          </select>
+          <input type="email" id="ins-email" placeholder="Email" style="padding:11px;border:1px solid rgba(99,102,241,0.3);border-radius:8px;background:#0b1020;color:white;font-size:14px" />
+          <input type="text" id="ins-pass" placeholder="Contraseña inicial (mín. 6)" value="Prode2026" style="padding:11px;border:1px solid rgba(99,102,241,0.3);border-radius:8px;background:#0b1020;color:white;font-size:14px" />
+        </div>
+        <div id="ins-msg" style="margin-top:10px"></div>
+        <div class="actions-bar"><button id="btn-inscribir">➕ Inscribir empleado</button></div>
+        <div style="margin-top:20px;border-top:1px solid rgba(99,102,241,0.2);padding-top:14px">
+          <h2 style="font-size:15px">Empleados inscriptos hasta ahora</h2>
+          <div id="ins-lista" style="font-size:13px;color:#cbd5e1;margin-top:8px"></div>
+        </div>
+      </div>
+    </div>
+
     <div id="tab-admin" style="display:none">
       <div class="card"><h2>⚙️ Cargar resultados oficiales</h2>
         <div class="info-box">Solo el admin ve esta pestaña.</div>
@@ -253,32 +274,19 @@ const showMsg = (text, type) => { $("auth-msg").innerHTML = '<div class="alert '
   }
 })();
 
-// Mostrar campos extra al tipear en nombre o legajo (modo "registro")
+// Mostrar campo sucursal al tipear en nombre (modo "registro")
 function mostrarCamposRegistro() {
   $("auth-sucursal").style.display = "block";
 }
 $("auth-name").addEventListener("focus", mostrarCamposRegistro);
-$("auth-legajo").addEventListener("focus", mostrarCamposRegistro);
 
 $("btn-register").onclick = async () => {
   const name = $("auth-name").value.trim();
-  const legajoStr = $("auth-legajo").value.trim();
   const sucursal = $("auth-sucursal").value;
   const email = $("auth-email").value.trim();
   const pass = $("auth-pass").value;
 
   if (!name) return showMsg("Ingresá tu nombre completo");
-  if (!legajoStr) return showMsg("Ingresá tu legajo");
-  if (!/^\d+$/.test(legajoStr)) return showMsg("El legajo debe ser solo números");
-  const legajo = parseInt(legajoStr);
-
-  // Validar contra la nómina
-  if (typeof LEGAJOS_VALIDOS !== "undefined") {
-    if (!(legajoStr in LEGAJOS_VALIDOS)) {
-      return showMsg("Legajo no encontrado en la nómina de empleados fijos. Verificá el número o contactá con RRHH.");
-    }
-  }
-
   if (sucursal === "") return showMsg("Seleccioná tu sucursal");
   if (!email || !pass) return showMsg("Completá email y contraseña");
 
@@ -286,7 +294,6 @@ $("btn-register").onclick = async () => {
     const cred = await auth.createUserWithEmailAndPassword(email, pass);
     await db.collection("users").doc(cred.user.uid).set({
       name: name,
-      legajo: legajo,
       sucursal: parseInt(sucursal),
       email: email,
       createdAt: new Date()
@@ -335,7 +342,11 @@ auth.onAuthStateChanged(async (user) => {
     $("user-avatar").textContent = (data.name || "?")[0].toUpperCase();
     $("auth-screen").style.display = "none";
     $("app-screen").style.display = "block";
-    if (isAdmin) $("admin-tab-btn").style.display = "block";
+    if (isAdmin) {
+      $("admin-tab-btn").style.display = "block";
+      $("inscribir-tab-btn").style.display = "block";
+      poblarInsSucursales();
+    }
     await loadOfficialResults();
     await loadUserPredictions();
     renderMatches();
@@ -351,10 +362,11 @@ document.querySelectorAll("nav button").forEach(btn => {
   btn.onclick = () => {
     document.querySelectorAll("nav button").forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
-    ["fixture","fixture-view","leaderboard","rules","admin"].forEach(t => $("tab-" + t).style.display = "none");
+    ["fixture","fixture-view","leaderboard","rules","admin","inscribir"].forEach(t => $("tab-" + t).style.display = "none");
     $("tab-" + btn.dataset.tab).style.display = "block";
     if (btn.dataset.tab === "leaderboard") renderLeaderboard();
     if (btn.dataset.tab === "fixture-view") renderFixtureView();
+    if (btn.dataset.tab === "inscribir") renderInsLista();
   };
 });
 
@@ -443,7 +455,7 @@ $("btn-save").onclick = async () => {
 
 async function renderLeaderboard() {
   const tbody = $("leaderboard-body");
-  tbody.innerHTML = '<tr><td colspan="7">Cargando...</td></tr>';
+  tbody.innerHTML = '<tr><td colspan="6">Cargando...</td></tr>';
   const predSnap = await db.collection("predictions").get();
   const userSnap = await db.collection("users").get();
   const users = {};
@@ -459,12 +471,12 @@ async function renderLeaderboard() {
       else if (pts === 1) { points += 1; hits++; }
     });
     const u = users[uid] || {};
-    ranks.push({ uid: uid, name: u.name || "?", legajo: u.legajo != null ? u.legajo : "-", sucursal: u.sucursal != null ? ("Suc. " + u.sucursal) : "-", points: points, exact: exact, hits: hits });
+    ranks.push({ uid: uid, name: u.name || "?", sucursal: u.sucursal != null ? ("Suc. " + u.sucursal) : "-", points: points, exact: exact, hits: hits });
   });
   ranks.sort((a, b) => b.points - a.points || b.exact - a.exact);
   tbody.innerHTML = "";
   if (ranks.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#94a3b8">Todavía no hay pronósticos cargados</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#94a3b8">Todavía no hay pronósticos cargados</td></tr>';
     return;
   }
   ranks.forEach((r, i) => {
@@ -472,7 +484,7 @@ async function renderLeaderboard() {
     if (r.uid === currentUser.uid) tr.classList.add("me-row");
     const medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : (i + 1);
     const youTag = r.uid === currentUser.uid ? ' (vos)' : '';
-    tr.innerHTML = '<td>' + medal + '</td><td>' + r.name + youTag + '</td><td>' + r.legajo + '</td><td>' + r.sucursal + '</td><td>' + r.hits + '</td><td>' + r.exact + '</td><td><strong style="color:#86efac;font-size:16px">' + r.points + '</strong></td>';
+    tr.innerHTML = '<td>' + medal + '</td><td>' + r.name + youTag + '</td><td>' + r.sucursal + '</td><td>' + r.hits + '</td><td>' + r.exact + '</td><td><strong style="color:#86efac;font-size:16px">' + r.points + '</strong></td>';
     tbody.appendChild(tr);
   });
 }
@@ -538,6 +550,79 @@ function renderAdmin() {
       '<div class="team-mini">' + m.team2 + '</div>';
     cont.appendChild(div);
   });
+}
+
+// ====== INSCRIPCIÓN MANUAL DE EMPLEADOS (admin) ======
+let secondaryApp = null;
+let secondaryAuth = null;
+function getSecondaryAuth() {
+  if (!secondaryApp) {
+    secondaryApp = firebase.initializeApp(firebaseConfig, "Secondary");
+    secondaryAuth = firebase.auth(secondaryApp);
+  }
+  return secondaryAuth;
+}
+
+function poblarInsSucursales() {
+  const sel = $("ins-sucursal");
+  if (!sel || sel.children.length > 1) return;
+  if (typeof SUCURSALES !== "undefined") {
+    SUCURSALES.forEach(num => {
+      const opt = document.createElement("option");
+      opt.value = String(num);
+      opt.textContent = "Sucursal " + num;
+      sel.appendChild(opt);
+    });
+  }
+}
+
+const showInsMsg = (text, type) => {
+  $("ins-msg").innerHTML = '<div class="alert ' + (type || "error") + '">' + text + '</div>';
+};
+
+$("btn-inscribir").onclick = async () => {
+  const name = $("ins-name").value.trim();
+  const sucursal = $("ins-sucursal").value;
+  const email = $("ins-email").value.trim();
+  const pass = $("ins-pass").value;
+  if (!name) return showInsMsg("Falta el nombre");
+  if (!sucursal) return showInsMsg("Falta seleccionar sucursal");
+  if (!email) return showInsMsg("Falta email");
+  if (!pass || pass.length < 6) return showInsMsg("Contraseña mínimo 6 caracteres");
+  try {
+    const sAuth = getSecondaryAuth();
+    const cred = await sAuth.createUserWithEmailAndPassword(email, pass);
+    await db.collection("users").doc(cred.user.uid).set({
+      name: name, sucursal: parseInt(sucursal),
+      email: email, createdAt: new Date(), registradoPor: "admin"
+    });
+    await sAuth.signOut();
+    showInsMsg("✅ " + name + " inscripto. Email: " + email + " / Contraseña: " + pass, "ok");
+    $("ins-name").value = "";
+    $("ins-sucursal").value = "";
+    $("ins-email").value = "";
+    $("ins-pass").value = "Prode2026";
+    renderInsLista();
+  } catch (e) { showInsMsg(traducirError(e.code)); }
+};
+
+async function renderInsLista() {
+  const cont = $("ins-lista");
+  if (!cont) return;
+  cont.innerHTML = "Cargando...";
+  try {
+    const snap = await db.collection("users").get();
+    const arr = [];
+    snap.forEach(d => arr.push(d.data()));
+    arr.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+    if (arr.length === 0) { cont.innerHTML = "<em>Nadie inscripto todavía</em>"; return; }
+    let html = "<table style='width:100%;font-size:12px'><thead><tr><th>Nombre</th><th>Sucursal</th><th>Email</th></tr></thead><tbody>";
+    arr.forEach(u => {
+      html += "<tr><td>" + (u.name || "?") + "</td><td>" + (u.sucursal != null ? ("Suc. " + u.sucursal) : "-") + "</td><td style='font-size:11px;color:#94a3b8'>" + (u.email || "-") + "</td></tr>";
+    });
+    html += "</tbody></table>";
+    cont.innerHTML = html;
+  } catch (e) { cont.innerHTML = "Error: " + e.message; }
 }
 
 $("btn-save-results").onclick = async () => {
