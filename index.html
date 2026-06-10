@@ -29,183 +29,61 @@ main { max-width: 1100px; margin: 0 auto; padding: 0 20px 100px; }
 .info-box { background: linear-gradient(135deg, rgba(99,102,241,0.12), rgba(139,92,246,0.10)); border: 1px solid rgba(99,102,241,0.25); padding: 14px 16px; border-radius: 12px; font-size: 13.5px; color: #cbd5e1; margin-bottom: 20px; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
 .badge { display: inline-block; padding: 3px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; color: white; }
 .badge.b3 { background: #22c55e; } .badge.b1 { background: #eab308; } .badge.b0 { background: #64748b; }
-/* ===== FONDO MUNDIAL ARGENTINA (claro y festivo) ===== */
-body.login-mode {
-  background:
-    radial-gradient(1000px 500px at 50% 0%, rgba(116,172,223,0.55), transparent 70%),
-    radial-gradient(800px 400px at 10% 50%, rgba(255,255,255,0.20), transparent 60%),
-    radial-gradient(800px 400px at 90% 50%, rgba(116,172,223,0.45), transparent 60%),
-    radial-gradient(600px 300px at 50% 100%, rgba(246,180,14,0.18), transparent 70%),
-    linear-gradient(180deg, #74acdf 0%, #a8c8e0 50%, #74acdf 100%);
-}
-body.login-mode::before {
-  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0;
-  background:
-    repeating-linear-gradient(90deg,
-      rgba(255,255,255,0.06) 0,
-      rgba(255,255,255,0.06) 40px,
-      transparent 40px,
-      transparent 80px);
-}
+/* Login mode usa el fondo por defecto del body (oscuro elegante) */
 
-/* ===== ELEMENTOS FLOTANTES DEL FONDO ===== */
-.bg-decor { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
-.bg-decor .floater { position: absolute; opacity: 0.7; animation: float 8s ease-in-out infinite; }
-.bg-decor .floater.f1 { top: 8%;  left: 6%;  font-size: 30px; animation-delay: 0s; }
-.bg-decor .floater.f2 { top: 14%; right: 8%; font-size: 26px; animation-delay: 1.5s; animation-duration: 10s; }
-.bg-decor .floater.f3 { bottom: 12%; left: 8%; font-size: 32px; animation-delay: 0.8s; animation-duration: 9s; }
-.bg-decor .floater.f4 { bottom: 18%; right: 6%; font-size: 28px; animation-delay: 2.2s; animation-duration: 11s; }
-.bg-decor .floater.f5 { top: 50%; left: 3%; font-size: 22px; animation-delay: 3s; animation-duration: 12s; }
-.bg-decor .floater.f6 { top: 60%; right: 4%; font-size: 24px; animation-delay: 1s; animation-duration: 10s; }
-
-@keyframes float {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50%      { transform: translateY(-25px) rotate(10deg); }
-}
-
-@keyframes bounce-ball {
-  0%, 100% { transform: translateY(0); }
-  50%      { transform: translateY(-12px); }
-}
-
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 12px 32px rgba(116,172,223,0.5), 0 0 0 0 rgba(116,172,223,0.4); }
-  50%      { box-shadow: 0 12px 32px rgba(116,172,223,0.7), 0 0 0 12px rgba(116,172,223,0); }
-}
-
-@keyframes shine {
-  0%   { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
-
-@keyframes wave {
-  0%, 100% { transform: rotate(-3deg); }
-  50%      { transform: rotate(3deg); }
-}
-
-/* ===== AUTH WRAP CON TEMÁTICA MUNDIAL ===== */
+/* ===== AUTH WRAP (Card sobria sobre estadio) ===== */
 .auth-wrap {
-  max-width: 460px; margin: 40px auto; padding: 32px 32px 36px;
-  background: rgba(255,255,255,0.96);
-  backdrop-filter: blur(24px);
-  border-radius: 24px;
-  border: 3px solid #ffffff;
-  box-shadow: 0 25px 60px -10px rgba(15,23,42,0.35), 0 0 0 4px rgba(116,172,223,0.45);
+  max-width: 440px; margin: 60px auto; padding: 34px 32px;
+  background: rgba(15,23,42,0.88);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 25px 70px -10px rgba(0,0,0,0.7);
   position: relative;
   z-index: 1;
-  overflow: hidden;
 }
-
-/* Franja celeste/blanca/celeste decorativa arriba */
-.auth-wrap::before {
-  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 8px;
-  background: linear-gradient(90deg, #74acdf 0%, #74acdf 33%, #ffffff 33%, #ffffff 66%, #74acdf 66%, #74acdf 100%);
-}
-.auth-wrap::after {
-  content: ""; position: absolute; bottom: 0; left: 0; right: 0; height: 6px;
-  background: linear-gradient(90deg, #74acdf 0%, #74acdf 33%, #ffffff 33%, #ffffff 66%, #74acdf 66%, #74acdf 100%);
-}
-
-/* Banner Mundial */
-.mundial-banner {
-  display: flex; align-items: center; justify-content: center; gap: 8px;
-  background: linear-gradient(90deg, #74acdf, #ffffff, #74acdf);
-  color: #0f172a;
-  padding: 7px 14px; border-radius: 999px;
-  font-size: 11px; font-weight: 900; letter-spacing: 2px;
-  margin: 8px auto 16px; width: fit-content;
-  box-shadow: 0 4px 12px rgba(116,172,223,0.4);
-  animation: pulse-glow 2.5s ease-in-out infinite;
-}
-.mundial-banner .ball { display: inline-block; animation: bounce-ball 1.5s ease-in-out infinite; }
-.mundial-banner .star { color: #f6b40e; }
 
 .auth-wrap h1 {
-  text-align: center; margin-bottom: 4px; font-size: 28px;
-  background: linear-gradient(90deg, #1e3a8a, #74acdf, #1e3a8a);
-  background-size: 200% auto;
-  -webkit-background-clip: text; background-clip: text; color: transparent;
-  font-weight: 900; letter-spacing: 1px;
-  animation: shine 4s linear infinite;
+  text-align: center; margin-bottom: 4px; font-size: 26px;
+  color: #ffffff;
+  font-weight: 800; letter-spacing: 0.5px;
 }
-
-/* Inputs adaptados a fondo claro */
-.auth-wrap input, .auth-wrap select {
-  background: #f1f5f9 !important;
-  color: #0f172a !important;
-  border: 1px solid #cbd5e1 !important;
-}
-.auth-wrap input:focus {
-  border-color: #74acdf !important;
-  box-shadow: 0 0 0 3px rgba(116,172,223,0.25) !important;
-  background: #ffffff !important;
-}
-.auth-wrap input::placeholder { color: #94a3b8; }
-
-.auth-wrap p.sub { color: #475569 !important; }
-
-.auth-wrap .toggle { color: #64748b !important; }
-.auth-wrap .toggle a { color: #74acdf !important; font-weight: 700; }
 
 .auth-wrap .brand {
   display: flex; flex-direction: column; align-items: center;
-  gap: 8px; margin-bottom: 14px; position: relative;
+  gap: 8px; margin-bottom: 18px;
 }
 
 .auth-wrap .brand-logo {
-  width: 140px; height: 140px; border-radius: 50%; overflow: hidden;
-  position: relative;
-  animation: pulse-glow 2.5s ease-in-out infinite, wave 4s ease-in-out infinite;
-  border: 5px solid #ffffff;
+  width: 110px; height: 110px; border-radius: 50%; overflow: hidden;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.4);
+  border: 3px solid rgba(255,255,255,0.9);
 }
 .auth-wrap .brand-logo img { width: 100%; height: 100%; display: block; object-fit: cover; }
 
-/* CAMISETA ARGENTINA superpuesta sobre la jirafa */
-.auth-wrap .brand-logo .jersey {
-  position: absolute;
-  bottom: 0; left: 50%;
-  transform: translateX(-50%);
-  width: 75%;
-  height: 38%;
-  background: repeating-linear-gradient(
-    90deg,
-    #74acdf 0,
-    #74acdf 11px,
-    #ffffff 11px,
-    #ffffff 22px
-  );
-  border-top: 3px solid #ffffff;
-  box-shadow: 0 -2px 8px rgba(0,0,0,0.2) inset;
-  pointer-events: none;
-}
-/* AFA label en el centro del jersey */
-.auth-wrap .brand-logo .jersey::before {
-  content: "AR";
-  position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 14px; font-weight: 900;
-  color: #0f172a;
-  background: #f6b40e;
-  padding: 1px 6px;
-  border-radius: 4px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
-}
-
-/* Banderitas alrededor del logo */
-.brand-flags { position: absolute; top: -8px; right: -8px; display: flex; gap: 4px; font-size: 26px; animation: wave 3s ease-in-out infinite; }
-.brand-trophy { position: absolute; bottom: -4px; left: -8px; font-size: 28px; animation: bounce-ball 2s ease-in-out infinite; }
-
 .auth-wrap .brand-name {
-  font-size: 12px; font-weight: 900; color: #74acdf;
-  letter-spacing: 3px; text-transform: uppercase;
-  text-shadow: 0 2px 8px rgba(116,172,223,0.4);
+  font-size: 12px; font-weight: 700; color: #cbd5e1;
+  letter-spacing: 2px; text-transform: uppercase;
 }
 
 .auth-wrap p.sub {
-  text-align: center; color: #cbd5e1; margin: 6px 0 24px; font-size: 13px;
-  font-style: italic;
+  text-align: center; color: #94a3b8; margin: 8px 0 24px; font-size: 13px;
 }
+
+/* Inputs sobre fondo oscuro */
+.auth-wrap input, .auth-wrap select {
+  background: rgba(15,23,42,0.8);
+  color: #f1f5f9;
+  border: 1px solid rgba(255,255,255,0.15);
+}
+.auth-wrap input:focus {
+  border-color: #818cf8;
+  box-shadow: 0 0 0 3px rgba(129,140,248,0.18);
+  background: rgba(15,23,42,0.95);
+}
+.auth-wrap input::placeholder { color: #64748b; }
+.auth-wrap .toggle { color: #94a3b8; }
+.auth-wrap .toggle a { color: #a5b4fc; }
 .auth-wrap input, .auth-wrap select { width: 100%; padding: 13px 14px; margin: 7px 0; border: 1px solid rgba(99,102,241,0.25); border-radius: 10px; background: rgba(15,23,42,0.8); color: #f1f5f9; font-size: 15px; }
 .auth-wrap select { appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a5b4fc' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'/%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 12px center; background-size: 16px; padding-right: 40px; cursor: pointer; }
 .auth-wrap input:focus { outline: none; border-color: #818cf8; box-shadow: 0 0 0 3px rgba(129,140,248,0.18); }
@@ -274,36 +152,15 @@ th { color: #a5b4fc; font-size: 12px; font-weight: 700; text-transform: uppercas
 </head>
 <body>
 
-<!-- Elementos decorativos flotantes (Mundial Argentina) -->
-<div class="bg-decor" id="bg-decor">
-  <div class="floater f1">⚽</div>
-  <div class="floater f2">🏆</div>
-  <div class="floater f3">🇦🇷</div>
-  <div class="floater f4">⚽</div>
-  <div class="floater f5">⭐</div>
-  <div class="floater f6">🇦🇷</div>
-</div>
-
 <div id="auth-screen" class="auth-wrap">
-  <div class="mundial-banner">
-    <span class="star">★</span>
-    <span>MUNDIAL 2026</span>
-    <span class="ball">⚽</span>
-    <span>ARGENTINA</span>
-    <span class="star">★</span>
-  </div>
-
   <div class="brand">
     <div class="brand-logo">
       <img src="logo.jpg" alt="El Mundo del Juguete" onerror="this.style.display='none'" />
-      <div class="jersey"></div>
-      <div class="brand-flags">🇦🇷</div>
-      <div class="brand-trophy">🏆</div>
     </div>
     <div class="brand-name">El Mundo del Juguete</div>
   </div>
   <h1>PRODE MUNDIAL 2026</h1>
-  <p class="sub">¡Vamos Argentina! Pronosticá y ganá grandes premios</p>
+  <p class="sub">Pronosticá los partidos y ganá el prode</p>
   <input type="text" id="auth-name" placeholder="Tu nombre completo (solo al registrarte)" />
   <select id="auth-sucursal" style="display:none">
     <option value="">Seleccionar sucursal...</option>
